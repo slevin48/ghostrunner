@@ -3,5 +3,13 @@ from streamlit_geolocation import streamlit_geolocation
 
 st.logo("img/ghost.png")
 
+st.title("Ghostrunner 👻")
+
+st.write("🔽 Click to display location")
+
 location = streamlit_geolocation()
-st.write(location)
+if location and location["latitude"] and location["longitude"]:
+    st.map({
+        "lat": [location["latitude"]],
+        "lon": [location["longitude"]]
+    })
