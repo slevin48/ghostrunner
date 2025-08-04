@@ -1,10 +1,33 @@
 import streamlit as st
 from streamlit_geolocation import streamlit_geolocation
 from stravalib import Client
+from datetime import datetime
+from numbers import Number
 
 st.logo("img/ghost.png")
 
 st.title("Ghostrunner 👻")
+
+# ————— Helpers —————
+def get_seconds(dur):
+    """Return total seconds from timedelta, numeric, or digit-string."""
+    # 1) real timedelta
+    if hasattr(dur, "total_seconds"):
+        return int(dur.total_seconds())
+    # 2) numeric (int or float)
+    if isinstance(dur, Number):
+        return int(dur)
+    # 3) string of digits
+    s = str(dur)
+    if s.isdigit():
+        return int(s)
+    # Unexpected type
+    raise ValueError(f"Can't parse duration: {dur!r}")
+
+def format_duration(secs: int) -> str:
+    hrs, rem = divmod(secs, 3600)
+    mins, secs = divmod(rem, 60)
+    return f"{hrs}:{mins:02d}:{secs:02d}"
 
 #
 # 1) Load your secrets
@@ -66,3 +89,27 @@ if location and location["latitude"] and location["longitude"]:
         "lat": [location["latitude"]],
         "lon": [location["longitude"]]
     })
+activities = client.get_activities(limit=5)
+st.header("Your Recent Activities 🏃‍♂️")
+
+for activity in activities:
+    dist_km    = activity.distance    / 1000
+    secs       = get_seconds(activity.moving_time)
+    moving     = format_duration(secs)
+    start_loc  = activity.start_date.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    speed_kmh  = activity.average_speed * 3.6
+    elev_gain  = activity.total_elevation_gain
+
+    st.subheader(f"{activity.name} ({activity.type.root})")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Distance",    f"{dist_km:.2f} km")
+    c2.metric("Moving Time", moving)
+    c3.metric("Avg Speed",   f"{speed_kmh:.2f} km/h")
+
+    date_str, time_str = start_loc.split(" ")
+    c4, c5, c6 = st.columns(3)
+    c4.metric("Elevation Gain", f"{elev_gain:.1f} m")
+    c5.metric("Date", date_str)
+    c6.metric("Time", time_str)
+
+    st.markdown("---")
