@@ -4,6 +4,9 @@
 
 Streamlit App providing an AI ghost running with you 
 
+**Connect to Strava**
+
+![strava-oauth](img/strava-oauth.png)
 
 Resources:
 - https://github.com/aghasemi/streamlit_js_eval
