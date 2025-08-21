@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit_geolocation import streamlit_geolocation
 from stravalib import Client
-from datetime import datetime
 from numbers import Number
 
 st.logo("img/ghost.png")
@@ -71,6 +70,7 @@ else:
     access_token = token_response["access_token"]
     client.access_token = access_token
     st.session_state.strava_token = access_token
+    st.query_params.clear()
     st.toast("🎉 Connected to Strava!")
 
 #
