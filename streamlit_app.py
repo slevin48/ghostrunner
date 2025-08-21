@@ -82,6 +82,13 @@ with st.sidebar:
     st.header("Your Strava Profile 👤")
     st.write(f"Welcome, {athlete.firstname}! 👋")
     st.image(athlete.profile, width=50)
+    # --- Logout button ---
+    if st.button("🚪 Logout"):
+        if "strava_token" in st.session_state:
+            del st.session_state["strava_token"]
+        st.query_params.clear()
+        st.toast("You have been logged out.")
+        st.rerun()
 st.write("🔽 Click to display location")
 location = streamlit_geolocation()
 if location and location["latitude"] and location["longitude"]:
